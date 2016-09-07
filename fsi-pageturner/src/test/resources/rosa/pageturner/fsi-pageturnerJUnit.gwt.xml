@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module rename-to="fsi-pageturner">
-  <!-- Inherit our applications main module.                      -->
-  <inherits name='rosa.pageturner.fsi-pageturner' />
-
-  <!-- Specify the path to any remote services.                   -->
-  <servlet path="/fsi-pageturner/greet" class="rosa.pageturner.server.GreetingServiceImpl" />
-
-</module>
