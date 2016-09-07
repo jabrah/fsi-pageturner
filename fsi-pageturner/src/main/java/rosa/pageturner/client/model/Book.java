@@ -7,7 +7,9 @@ public class Book {
     public final String fsiDirectory;
     public final List<Opening> openings;
 
-    public Book(String fsiDirectory, List<Opening> openings) {
+    public final String missingImage;
+
+    public Book(String fsiDirectory, List<Opening> openings, String missingImage) {
         if (fsiDirectory == null || fsiDirectory.isEmpty()) {
             throw new IllegalArgumentException("Fsi directory must be specified for this book.");
         }
@@ -16,6 +18,7 @@ public class Book {
         }
         this.fsiDirectory = fsiDirectory;
         this.openings = openings;
+        this.missingImage = missingImage;
     }
 
     /**

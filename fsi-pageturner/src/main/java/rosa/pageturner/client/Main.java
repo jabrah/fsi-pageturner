@@ -3,6 +3,8 @@ package rosa.pageturner.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
@@ -39,8 +41,19 @@ public class Main implements EntryPoint {
         });
 
         Book fakeBook = fakeBook();
-        FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), missing, 400, 600);
+        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 600);
         pageTurner.setDebug(true);
+
+        pageTurner.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (pageTurner.clickedOnVerso(event)) {
+                    Console.log("Verso clicked!");
+                } else if (pageTurner.clickedOnRecto(event)) {
+                    Console.log("Recto clicked!");
+                }
+            }
+        });
 
         RootPanel.get().add(pageTurner);
     }
@@ -65,7 +78,7 @@ public class Main implements EntryPoint {
                     openings.size()
             ));
         }
-        return new Book("rose/Arsenal3339/", openings);
+        return new Book("rose/Arsenal3339/", openings, missing);
     }
 
 }

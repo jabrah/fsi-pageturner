@@ -4,21 +4,23 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  *
  */
-public class FsiPageTurner extends Composite implements HasThumbnailClickHandler {
+public class FsiPageTurner extends Composite implements HasClickHandlers {
     private static final Map<String, String> SHARED_VIEWER_OPTIONS = new HashMap<>();
     private static final Map<String, String> IMAGE_FLOW_OPTIONS = new HashMap<>();
 
@@ -41,15 +43,10 @@ public class FsiPageTurner extends Composite implements HasThumbnailClickHandler
 
     private boolean debug;
 
-    private final List<ThumbnailClickHandler> thumbnailClickHandlers;
-
     private final Book model;
-    private final String missingImage;
 
-    public FsiPageTurner(Book book, String[] thumbSrcs, String missingImage, int width, int height) {
+    public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height) {
         this.model = book;
-        thumbnailClickHandlers = new ArrayList<>();
-        this.missingImage = missingImage;
 
         Panel root = new FlowPanel("fsi-rosa-pageturner");
 
@@ -108,7 +105,7 @@ public class FsiPageTurner extends Composite implements HasThumbnailClickHandler
 
         thumbnailStrip.setId("rosa-thumbnails");
         thumbnailStrip.setOptions(options);
-        thumbnailStrip.setSize((width*2), 150);
+        thumbnailStrip.setSize((width*2 + 2), 150);
 
         root.add(left);
         root.add(right);
@@ -120,6 +117,20 @@ public class FsiPageTurner extends Composite implements HasThumbnailClickHandler
 
         setPositions(width, height);
         fsiInit();
+    }
+
+    public boolean clickedOnVerso(ClickEvent event) {
+        int x = event.getRelativeX(getElement());
+        int y = event.getRelativeY(getElement());
+        return x > left.getAbsoluteLeft() && x < (left.getAbsoluteLeft() + left.getOffsetWidth()) &&
+                y > left.getAbsoluteTop() && y < (left.getAbsoluteTop() + left.getOffsetHeight());
+    }
+
+    public boolean clickedOnRecto(ClickEvent event) {
+        int x = event.getRelativeX(getElement());
+        int y = event.getRelativeY(getElement());
+        return x > right.getAbsoluteLeft() && x < (right.getAbsoluteLeft() + right.getOffsetWidth()) &&
+                y > right.getAbsoluteTop() && y < (right.getAbsoluteTop() + right.getOffsetHeight());
     }
 
     private void setPositions(int viewer_width, int viewer_height) {
@@ -161,18 +172,14 @@ public class FsiPageTurner extends Composite implements HasThumbnailClickHandler
 
         Opening selected = model.getOpening(strImagePath);
         if (selected.verso == null || selected.verso.missing) {
-            left.changeImage(missingImage);
+            left.changeImage(model.missingImage);
         } else {
             left.changeImage(selected.verso.id);
         }
         if (selected.recto == null || selected.recto.missing) {
-            right.changeImage(missingImage);
+            right.changeImage(model.missingImage);
         } else {
             right.changeImage(selected.recto.id);
-        }
-
-        for (ThumbnailClickHandler handler : thumbnailClickHandlers) {
-            handler.handleThumbnailClick(strImagePath, nImageIndex);
         }
     }
 
@@ -192,11 +199,7 @@ public class FsiPageTurner extends Composite implements HasThumbnailClickHandler
     }
 
     @Override
-    public void addThumbnailClickHandler(ThumbnailClickHandler handler) {
-        thumbnailClickHandlers.add(handler);
-    }
-
-    public void clearThumbnailClickHandlers() {
-        thumbnailClickHandlers.clear();
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
     }
 }

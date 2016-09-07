@@ -54,7 +54,7 @@ public class FsiViewer extends FsiBase {
     }-*/;
 
     private native void destroy(Element elem) /*-{
-        if (this.@rosa.pageturner.client.FsiViewer::debug()) {
+        if (elem.@rosa.pageturner.client.FsiViewer::debug()) {
             log("Destroying viewer instance.");
         }
         elem.destroy();
