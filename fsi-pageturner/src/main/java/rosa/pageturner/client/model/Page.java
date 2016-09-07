@@ -1,12 +1,12 @@
 package rosa.pageturner.client.model;
 
 public class Page {
-    final String id;
-    final String label;
-    final boolean missing;
+    public final String id;
+    public final String label;
+    public final boolean missing;
 
-    final int width;
-    final int height;
+    public final int width;
+    public final int height;
 
     public Page(String id, String label, boolean missing, int width, int height) {
         if (id == null) {

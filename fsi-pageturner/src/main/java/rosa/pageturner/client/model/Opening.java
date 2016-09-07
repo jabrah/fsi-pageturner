@@ -2,11 +2,11 @@ package rosa.pageturner.client.model;
 
 public class Opening {
 
-    final Page verso;
-    final Page recto;
+    public final Page verso;
+    public final Page recto;
 
-    final String label;
-    final int position;
+    public final String label;
+    public final int position;
 
     public Opening(Page verso, Page recto, String label, int position) {
         this.verso = verso;

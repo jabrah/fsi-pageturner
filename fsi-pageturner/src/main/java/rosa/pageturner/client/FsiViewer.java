@@ -1,6 +1,7 @@
 package rosa.pageturner.client;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 
 public class FsiViewer extends FsiBase {
 
@@ -18,7 +19,7 @@ public class FsiViewer extends FsiBase {
         if (debug()) {
             console("Changing image -> " + imageId);
         }
-        changeImage(this, imageId);
+        changeImage(getElement(), imageId);
     }
 
     /**
@@ -29,40 +30,41 @@ public class FsiViewer extends FsiBase {
         if (debug()) {
             console("Destroying FSI Viewer instance.");
         }
-        destroy(this);
+        destroy(getElement());
     }
 
     /**
      * @return string containing the FSI Viewer JS software version.
      */
     public String getVersion() {
-        return getVersion(this);
+        return getVersion(getElement());
     }
 
     /**
      * Reset the viewer to the initial magnification and rotation.
      */
     public void resetView() {
-        resetView(this);
+        resetView(getElement());
     }
 
-    private native void changeImage(FsiViewer elem, String imageId) /*-{
+    private native void changeImage(Element elem, String imageId) /*-{
         var param = { fpxsrc: imageId };
+        console.log("[FsiViewer] changing image: " + imageId + "      " + elem);
         elem.changeImage(param);
     }-*/;
 
-    private native void destroy(FsiViewer elem) /*-{
+    private native void destroy(Element elem) /*-{
         if (this.@rosa.pageturner.client.FsiViewer::debug()) {
             log("Destroying viewer instance.");
         }
         elem.destroy();
     }-*/;
 
-    private native String getVersion(FsiViewer elem) /*-{
+    private native String getVersion(Element elem) /*-{
         return elem.getVersion();
     }-*/;
 
-    private native void resetView(FsiViewer elem) /*-{
+    private native void resetView(Element elem) /*-{
         elem.resetView();
     }-*/;
 

@@ -1,12 +1,13 @@
 package rosa.pageturner.client;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FocusWidget;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class FsiBase extends FocusWidget {
+public abstract class FsiBase extends FocusWidget {
 
     private boolean debug;
 
@@ -14,9 +15,8 @@ public class FsiBase extends FocusWidget {
         super(elem);
     }
 
-    protected native void console(String message) /*-{console.log("mooo");
-        var id = this.@rosa.pageturner.client.FsiViewer::getElement();
-        console.log("[FsiViewer(" + this.id + ")] " + message);
+    protected native void console(String message) /*-{
+        console.log("[Fsi] " + message);
     }-*/;
 
     public void setDebug(boolean debug) {
@@ -48,14 +48,9 @@ public class FsiBase extends FocusWidget {
         }
     }
 
-    public void setSize(String width, String height) {
-        setSize(getElement(), width, height);
+    public void setSize(int width, int height) {
+        getElement().getStyle().setWidth(width, Unit.PX);
+        getElement().getStyle().setHeight(height, Unit.PX);
     }
-
-    private final native void setSize(Element elem, String width, String height) /*-{
-        elem.style.width = width;
-        elem.style.height = height;
-    }-*/;
-
 
 }
