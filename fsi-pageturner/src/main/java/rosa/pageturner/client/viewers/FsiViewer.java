@@ -1,7 +1,8 @@
-package rosa.pageturner.client;
+package rosa.pageturner.client.viewers;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import rosa.pageturner.client.Console;
 
 public class FsiViewer extends FsiBase {
 
@@ -49,12 +50,11 @@ public class FsiViewer extends FsiBase {
 
     private native void changeImage(Element elem, String imageId) /*-{
         var param = { fpxsrc: imageId };
-        console.log("[FsiViewer] changing image: " + imageId + "      " + elem);
         elem.changeImage(param);
     }-*/;
 
     private native void destroy(Element elem) /*-{
-        if (elem.@rosa.pageturner.client.FsiViewer::debug()) {
+        if (elem.@rosa.pageturner.client.viewers.FsiViewer::debug()) {
             log("Destroying viewer instance.");
         }
         elem.destroy();

@@ -1,4 +1,4 @@
-package rosa.pageturner.client;
+package rosa.pageturner.client.viewers;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Float;
@@ -11,6 +11,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import rosa.pageturner.client.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 
@@ -185,7 +186,7 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
 
     private native void createViewerCallbacks(FsiPageTurner el) /*-{
         $wnd.imageFlowClick = function(oInstance, idElement, nImageIndex, strImagePath) {
-            el.@rosa.pageturner.client.FsiPageTurner::onThumbnailClick(Ljava/lang/String;I)(strImagePath, nImageIndex);
+            el.@rosa.pageturner.client.viewers.FsiPageTurner::onThumbnailClick(Ljava/lang/String;I)(strImagePath, nImageIndex);
         }
     }-*/;
 

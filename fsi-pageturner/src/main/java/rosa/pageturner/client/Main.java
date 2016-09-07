@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 import rosa.pageturner.client.model.Page;
+import rosa.pageturner.client.viewers.FsiPageTurner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Main implements EntryPoint {
 
         Book fakeBook = fakeBook();
         final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 600);
-        pageTurner.setDebug(true);
+        pageTurner.setDebug(false);
 
         pageTurner.addClickHandler(new ClickHandler() {
             @Override
