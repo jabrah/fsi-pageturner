@@ -20,6 +20,7 @@ public class FsiViewer extends FsiBase {
         if (debug()) {
             console("Changing image -> " + imageId);
         }
+        getElement().setAttribute("src", imageId);
         changeImage(getElement(), imageId);
     }
 

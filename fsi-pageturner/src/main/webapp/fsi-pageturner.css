@@ -1,4 +1,33 @@
+.viewer {
+  position: relative;
+  left: 0;
+  top: 0;
+  float: left;
+}
 
-fsi-viewer, fsi-imageflow {
-  border: 1px solid black;
+.pageturner-right {
+  float: none;
+}
+
+.pageturner-controls {
+  height: 20px;
+  background-color: #ebebeb;
+  /* Center items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageturner-controls a, .pageturner-controls a:visited {
+  color: #8d8d8d;
+  text-decoration: none;
+  padding: 2px;
+}
+
+.pageturner-controls a:hover {
+  color: #565757;
+}
+
+.pageturner-controls a:active {
+  color: black;
 }
