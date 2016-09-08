@@ -1,5 +1,6 @@
 package rosa.pageturner.client.model;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Book {
@@ -7,9 +8,9 @@ public class Book {
     public final String fsiDirectory;
     public final List<Opening> openings;
 
-    public final String missingImage;
+    public final Page missingImage;
 
-    public Book(String fsiDirectory, List<Opening> openings, String missingImage) {
+    public Book(String fsiDirectory, List<Opening> openings, Page missingImage) {
         if (fsiDirectory == null || fsiDirectory.isEmpty()) {
             throw new IllegalArgumentException("Fsi directory must be specified for this book.");
         }
@@ -17,7 +18,7 @@ public class Book {
             throw new IllegalArgumentException("List of openings must be provided for this book.");
         }
         this.fsiDirectory = fsiDirectory;
-        this.openings = openings;
+        this.openings = Collections.unmodifiableList(openings);
         this.missingImage = missingImage;
     }
 

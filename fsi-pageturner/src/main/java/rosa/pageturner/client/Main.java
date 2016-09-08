@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main implements EntryPoint {
-    private static final String missing = "rose/missing_image.tif";
+    private static final Page missing = new Page("rose/missing_image.tif", "label", false, 3200, 4000);
     private static final String list =
             "rose/Arsenal3339/Arsenal3339.frontmatter.pastedown.tif," +
                     "rose/Arsenal3339/Arsenal3339.frontmatter.flyleaf.01r.tif,rose/Arsenal3339/Arsenal3339.frontmatter.flyleaf.01v.tif," +
@@ -42,7 +42,7 @@ public class Main implements EntryPoint {
         });
 
         Book fakeBook = fakeBook();
-        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 600);
+        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 500);
         pageTurner.setDebug(false);
 
         pageTurner.addClickHandler(new ClickHandler() {
@@ -63,7 +63,7 @@ public class Main implements EntryPoint {
         List<Opening> openings = new ArrayList<>();
         openings.add(new Opening(
                 null,
-                new Page("rose/Arsenal3339/Arsenal3339.binding.frontcover.tif", "Binding Front cover", false, 600, 400),
+                new Page("rose/Arsenal3339/Arsenal3339.binding.frontcover.tif", "Binding Front cover", false, 3200, 4000),
                 "",
                 0
         ));
@@ -73,8 +73,8 @@ public class Main implements EntryPoint {
             String right = parts[i++];
 
             openings.add(new Opening(
-                    new Page(left, left, false, 600, 400),
-                    new Page(right, right, false, 600, 400),
+                    new Page(left, left, false, 3200, 4000),
+                    new Page(right, right, false, 3200, 4000),
                     "Label " + i,
                     openings.size()
             ));

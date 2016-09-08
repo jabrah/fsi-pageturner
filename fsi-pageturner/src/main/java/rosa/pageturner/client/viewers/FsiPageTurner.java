@@ -154,9 +154,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         String lpage = left.getElement().getAttribute("src");
         String rpage = right.getElement().getAttribute("src");
 
-        if (lpage != null && !lpage.isEmpty() && !lpage.equals(model.missingImage)) {
+        if (lpage != null && !lpage.isEmpty() && !lpage.equals(model.missingImage.id)) {
             return model.getOpening(lpage);
-        } else if (rpage != null && !rpage.isEmpty() && !rpage.equals(model.missingImage)) {
+        } else if (rpage != null && !rpage.isEmpty() && !rpage.equals(model.missingImage.id)) {
             return model.getOpening(rpage);
         } else {
             return null;
@@ -190,8 +190,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
             @Override
             public void onClick(ClickEvent event) {
                 int next = currentOpening().position + 1;
-                // TODO must bounds check
-                changeToOpening(model.getOpening(next));
+                if (next < model.openings.size()) {
+                    changeToOpening(model.getOpening(next));
+                }
             }
         }));
     }
@@ -242,12 +243,12 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
 
     private void changeToOpening(Opening opening) {
         if (opening.verso == null || opening.verso.missing) {
-            left.changeImage(model.missingImage);
+            left.changeImage(model.missingImage.id);
         } else {
             left.changeImage(opening.verso.id);
         }
         if (opening.recto == null || opening.recto.missing) {
-            right.changeImage(model.missingImage);
+            right.changeImage(model.missingImage.id);
         } else {
             right.changeImage(opening.recto.id);
         }

@@ -19,6 +19,21 @@ public class Page {
         this.height = height;
     }
 
+    /**
+     * @return aspect ratio = width / height
+     */
+    public double getAspectRatio() {
+        return (double)width / height;
+    }
+
+    public int getScaledWidth(int desiredHeight) {
+        return (int) (getAspectRatio() * desiredHeight);
+    }
+
+    public int getScaledHeight(int desiredWidth) {
+        return  (int) (width / getAspectRatio());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
