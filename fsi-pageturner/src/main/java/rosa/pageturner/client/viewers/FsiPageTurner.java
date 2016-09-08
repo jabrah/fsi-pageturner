@@ -3,6 +3,7 @@ package rosa.pageturner.client.viewers;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -40,12 +41,16 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         IMAGE_FLOW_OPTIONS.put("callBackClick", "imageFlowClick");
     }
 
+    private final FsiViewer zoomView;
     private final FsiViewer left;
     private final FsiViewer right;
     private final FsiImageFlow thumbnailStrip;
     private final Panel controls;
 
+    private Anchor closeBtn;
+
     private boolean debug;
+    private boolean zoomed;
 
     private final Book model;
 
@@ -54,15 +59,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
 
         Panel root = new FlowPanel("fsi-rosa-pageturner");
 
-        left = new FsiViewer();
-        right = new FsiViewer();
         controls = new FlowPanel("div");
         thumbnailStrip = new FsiImageFlow();
 
-        left.setStyleName("viewer");
-        left.addStyleName("pageturner-left");
-        right.setStyleName("viewer");
-        right.addStyleName("pageturner-right");
         controls.setStyleName("pageturner-controls");
         thumbnailStrip.setStyleName("pageturner-thumbs");
 
@@ -74,28 +73,60 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         // Set viewer options here
         Map<String, String> options = new HashMap<>(SHARED_VIEWER_OPTIONS);
 
-        // Left viewer
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------- Left viewer ----------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+        left = new FsiViewer();
+
         options.put("onInit", "initFsiViewerV");
         if (start.verso != null) {
             options.put("src", start.verso.id);
         }
 
+        left.setStyleName("viewer");
+        left.addStyleName("pageturner-left");
         left.setId("rosa-pageturner-left");
         left.setOptions(options);
         left.setSize(width, height);
 
-        // Right viewer
+        left.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(left);
+                }
+            }
+        });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ----------- Right viewer --------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+        right = new FsiViewer();
+
         options = new HashMap<>(SHARED_VIEWER_OPTIONS);
         options.put("onInit", "initFsiViewerR");
         if (start.recto != null) {
             options.put("src", start.recto.id);
         }
 
+        right.setStyleName("viewer");
+        right.addStyleName("pageturner-right");
         right.setId("rosa-pageturner-right");
         right.setOptions(options);
         right.setSize(width, height);
 
-        // init thumbnail strip
+        right.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(right);
+                }
+            }
+        });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ----------- Thumbnails ----------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
         options = new HashMap<>(IMAGE_FLOW_OPTIONS);
         if (thumbSrcs == null || thumbSrcs.length == 0) {
             options.put("dir", fsiDir);
@@ -119,10 +150,25 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         thumbnailStrip.setOptions(options);
         thumbnailStrip.setSize((width*2 + 2), 150);
 
+// ---------------------------------------------------------------------------------------------------------------------
+// ----------- Zoom viewer ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+        zoomView = new FsiViewer();
+        options = new HashMap<>();
+        options.put("plugins", "FullScreen, Resize");
+        options.put("hideUI", "false");
+        options.put("enableZoom", "true");
+        options.put("src", book.missingImage.id);
+        zoomView.setId("rosa-pageturner-zoomview");
+        zoomView.setOptions(options);
+        zoomView.setSize(width * 2 + 2, height);
+        zoomView.setVisible(false);
+
         root.add(left);
         root.add(right);
         root.add(controls);
         root.add(thumbnailStrip);
+        root.add(zoomView);
 
         initWidget(root);
 
@@ -133,18 +179,12 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         fsiInit();
     }
 
-    public boolean clickedOnVerso(ClickEvent event) {
-        int x = event.getRelativeX(getElement());
-        int y = event.getRelativeY(getElement());
-        return x > left.getAbsoluteLeft() && x < (left.getAbsoluteLeft() + left.getOffsetWidth()) &&
-                y > left.getAbsoluteTop() && y < (left.getAbsoluteTop() + left.getOffsetHeight());
-    }
-
-    public boolean clickedOnRecto(ClickEvent event) {
-        int x = event.getRelativeX(getElement());
-        int y = event.getRelativeY(getElement());
-        return x > right.getAbsoluteLeft() && x < (right.getAbsoluteLeft() + right.getOffsetWidth()) &&
-                y > right.getAbsoluteTop() && y < (right.getAbsoluteTop() + right.getOffsetHeight());
+    private void zoomOnPage(FsiViewer viewer) {
+        zoomed = true;
+        String clickedImage = viewer.getElement().getAttribute("src");
+        zoomView.changeImage(clickedImage);
+        closeBtn.setVisible(true);
+        zoomView.setVisible(true);
     }
 
     /**
@@ -174,9 +214,28 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
 
         style = right.getElement().getStyle();
         style.setLeft(viewer_width + 2, Unit.PX);
+
+        style = zoomView.getElement().getStyle();
+        style.setPosition(Position.ABSOLUTE);
+        style.setTop(0, Unit.PX);
+        style.setLeft(0, Unit.PX);
     }
 
     private void setControls() {
+        closeBtn = newControl(new String[]{"fa", "fa-2x",  "fa-times"}, "Close zoom view", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (zoomed) {
+                    closeBtn.setVisible(false);
+                    zoomView.setVisible(false);
+                    zoomed = false;
+                }
+            }
+        });
+        closeBtn.setStyleName("pageturner-btn-zoom-close");
+        closeBtn.setVisible(false);
+        controls.add(closeBtn);
+
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-chevron-left"}, "Previous page", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

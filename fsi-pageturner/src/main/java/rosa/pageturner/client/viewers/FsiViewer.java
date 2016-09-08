@@ -4,6 +4,9 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import rosa.pageturner.client.Console;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class FsiViewer extends FsiBase {
 
     public FsiViewer() {
@@ -22,6 +25,17 @@ public class FsiViewer extends FsiBase {
         }
         getElement().setAttribute("src", imageId);
         changeImage(getElement(), imageId);
+    }
+
+    public void changeConfig(String pathToConfigFile, Map<String, String> params) {
+        Console.log("[FsiViewer] changing config. " + pathToConfigFile + "\n" + params.toString());
+        StringBuilder p = new StringBuilder("{");
+        for (Entry<String, String> param : params.entrySet()) {
+            p.append(param.getKey()).append(':').append(param.getValue()).append(',');
+        }
+        // Remove trailing comma and close JSON object
+        p.deleteCharAt(p.length()).append('}');
+        changeConfig(getElement(), pathToConfigFile, params.toString());
     }
 
     /**
@@ -54,10 +68,11 @@ public class FsiViewer extends FsiBase {
         elem.changeImage(param);
     }-*/;
 
+    private native void changeConfig(Element elem, String path, String params) /*-{
+        elem.changeConfig(path, params);
+    }-*/;
+
     private native void destroy(Element elem) /*-{
-        if (elem.@rosa.pageturner.client.viewers.FsiViewer::debug()) {
-            log("Destroying viewer instance.");
-        }
         elem.destroy();
     }-*/;
 

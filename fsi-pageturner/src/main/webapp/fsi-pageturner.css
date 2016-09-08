@@ -31,3 +31,10 @@
 .pageturner-controls a:active {
   color: black;
 }
+
+.pageturner-btn-zoom-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}

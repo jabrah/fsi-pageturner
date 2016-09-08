@@ -45,16 +45,16 @@ public class Main implements EntryPoint {
         final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 500);
         pageTurner.setDebug(false);
 
-        pageTurner.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (pageTurner.clickedOnVerso(event)) {
-                    Console.log("Verso clicked!");
-                } else if (pageTurner.clickedOnRecto(event)) {
-                    Console.log("Recto clicked!");
-                }
-            }
-        });
+//        pageTurner.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                if (pageTurner.clickedOnVerso(event)) {
+//                    Console.log("Verso clicked!");
+//                } else if (pageTurner.clickedOnRecto(event)) {
+//                    Console.log("Recto clicked!");
+//                }
+//            }
+//        });
 
         RootPanel.get().add(pageTurner);
     }
