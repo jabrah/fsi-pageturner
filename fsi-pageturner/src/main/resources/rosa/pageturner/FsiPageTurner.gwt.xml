@@ -4,10 +4,5 @@
     <inherits name='com.google.gwt.user.theme.standard.Standard' />
     <inherits name="com.google.gwt.regexp.RegExp"/>
 
-    <entry-point class='rosa.pageturner.client.Main' />
-
-    <set-configuration-property name="CssResource.style" value="PRETTY"/>
-
     <source path='client' />
-    <source path='shared' />
 </module>

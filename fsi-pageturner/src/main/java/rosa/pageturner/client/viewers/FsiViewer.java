@@ -2,7 +2,7 @@ package rosa.pageturner.client.viewers;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import rosa.pageturner.client.Console;
+import rosa.pageturner.client.util.Console;
 
 import java.util.Map;
 import java.util.Map.Entry;

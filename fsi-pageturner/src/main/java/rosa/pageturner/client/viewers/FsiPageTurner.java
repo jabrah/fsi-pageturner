@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
-import rosa.pageturner.client.Console;
+import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 

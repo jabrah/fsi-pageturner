@@ -1,20 +1,19 @@
-package rosa.pageturner.client;
+package rosa.fsi.demo.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 import rosa.pageturner.client.model.Page;
+import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.viewers.FsiPageTurner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main implements EntryPoint {
+public class FsiDemo implements EntryPoint {
     private static final Page missing = new Page("rose/missing_image.tif", "label", false, 3200, 4000);
     private static final String list =
             "rose/Arsenal3339/Arsenal3339.frontmatter.pastedown.tif," +
@@ -33,6 +32,8 @@ public class Main implements EntryPoint {
                     "rose/Arsenal3339/Arsenal3339.016r.tif,rose/Arsenal3339/Arsenal3339.016v.tif,rose/Arsenal3339/Arsenal3339.017r.tif," +
                     "rose/Arsenal3339/Arsenal3339.017v.tif,rose/Arsenal3339/Arsenal3339.018r.tif,rose/Arsenal3339/Arsenal3339.018v.tif,";
 
+
+
     public void onModuleLoad() {
         GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
             @Override
@@ -44,17 +45,6 @@ public class Main implements EntryPoint {
         Book fakeBook = fakeBook();
         final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 500);
         pageTurner.setDebug(false);
-
-//        pageTurner.addClickHandler(new ClickHandler() {
-//            @Override
-//            public void onClick(ClickEvent event) {
-//                if (pageTurner.clickedOnVerso(event)) {
-//                    Console.log("Verso clicked!");
-//                } else if (pageTurner.clickedOnRecto(event)) {
-//                    Console.log("Recto clicked!");
-//                }
-//            }
-//        });
 
         RootPanel.get().add(pageTurner);
     }

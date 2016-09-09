@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='FsiDemo'>
+    <inherits name="rosa.pageturner.FsiPageTurner"/>
+
+    <inherits name='com.google.gwt.user.User' />
+    <inherits name='com.google.gwt.user.theme.standard.Standard' />
+    <inherits name="com.google.gwt.resources.Resources" />
+
+    <entry-point class='rosa.fsi.demo.client.FsiDemo' />
+
+    <set-configuration-property name="CssResource.style" value="PRETTY"/>
+
+    <source path='client' />
+</module>
