@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import rosa.pageturner.client.model.Page;
 import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
@@ -241,7 +242,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
             public void onClick(ClickEvent event) {
                 int prev = currentOpening().position - 1;
                 if (prev >= 0) {
-                    changeToOpening(model.getOpening(prev));
+                    Opening opening = model.getOpening(prev);
+                    changeToOpening(opening);
+                    focusThumb(opening.verso);
                 }
             }
         }));
@@ -250,7 +253,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
             public void onClick(ClickEvent event) {
                 int next = currentOpening().position + 1;
                 if (next < model.openings.size()) {
-                    changeToOpening(model.getOpening(next));
+                    Opening opening = model.getOpening(next);
+                    changeToOpening(opening);
+                    focusThumb(opening.verso);
                 }
             }
         }));
@@ -310,6 +315,13 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
             right.changeImage(model.missingImage.id);
         } else {
             right.changeImage(opening.recto.id);
+        }
+    }
+
+    private void focusThumb(Page focusPage) {
+        int index = model.getPagePosition(focusPage.id);
+        if (index >= 0) {
+            thumbnailStrip.focusImage(index);
         }
     }
 

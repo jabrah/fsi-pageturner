@@ -1,5 +1,6 @@
 package rosa.pageturner.client.model;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,8 +10,9 @@ public class Book {
     public final List<Opening> openings;
 
     public final Page missingImage;
+    public final Page[] endSingles;
 
-    public Book(String fsiDirectory, List<Opening> openings, Page missingImage) {
+    public Book(String fsiDirectory, List<Opening> openings, Page missingImage, Page ... endSingles) {
         if (fsiDirectory == null || fsiDirectory.isEmpty()) {
             throw new IllegalArgumentException("Fsi directory must be specified for this book.");
         }
@@ -20,6 +22,7 @@ public class Book {
         this.fsiDirectory = fsiDirectory;
         this.openings = Collections.unmodifiableList(openings);
         this.missingImage = missingImage;
+        this.endSingles = endSingles;
     }
 
     /**
@@ -47,6 +50,29 @@ public class Book {
             throw new IndexOutOfBoundsException();
         }
         return openings.get(index);
+    }
+
+    public int getPagePosition(String pageId) {
+        // Check openings
+        Opening fromOpenings = getOpening(pageId);
+        if (fromOpenings != null) {
+            if (fromOpenings.verso.id.equals(pageId)) {
+                return fromOpenings.position * 2;
+            } else if (fromOpenings.recto.id.equals(pageId)) {
+                return fromOpenings.position * 2 + 1;
+            }
+        }
+
+        // Check single images at end
+        if (endSingles != null) {
+            for (int i = 0; i < endSingles.length; i++) {
+                if (endSingles[i].id.equals(pageId)) {
+                    return openings.size() * 2 + 1 + i;
+                }
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -78,7 +104,10 @@ public class Book {
         Book book = (Book) o;
 
         if (fsiDirectory != null ? !fsiDirectory.equals(book.fsiDirectory) : book.fsiDirectory != null) return false;
-        return openings != null ? openings.equals(book.openings) : book.openings == null;
+        if (openings != null ? !openings.equals(book.openings) : book.openings != null) return false;
+        if (missingImage != null ? !missingImage.equals(book.missingImage) : book.missingImage != null) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(endSingles, book.endSingles);
 
     }
 
@@ -86,6 +115,8 @@ public class Book {
     public int hashCode() {
         int result = fsiDirectory != null ? fsiDirectory.hashCode() : 0;
         result = 31 * result + (openings != null ? openings.hashCode() : 0);
+        result = 31 * result + (missingImage != null ? missingImage.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(endSingles);
         return result;
     }
 }
