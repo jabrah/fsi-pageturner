@@ -37,4 +37,14 @@ public class Opening {
         result = 31 * result + position;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Opening{" +
+                "verso=" + verso +
+                ", recto=" + recto +
+                ", label='" + label + '\'' +
+                ", position=" + position +
+                '}';
+    }
 }

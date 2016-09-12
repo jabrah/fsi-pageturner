@@ -55,8 +55,17 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
 
     private final Book model;
 
+    private int currentOpening;
+
+    public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height, boolean debug) {
+        this(book, thumbSrcs, width, height);
+        this.debug = debug;
+        debug("Initializing page turner with model: " + book.toString());
+    }
+
     public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height) {
         this.model = book;
+        this.currentOpening = 0;
 
         Panel root = new FlowPanel("fsi-rosa-pageturner");
 
@@ -192,16 +201,7 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
      * @return current opening visible in viewer, NULL if none was found
      */
     public Opening currentOpening() {
-        String lpage = left.getElement().getAttribute("src");
-        String rpage = right.getElement().getAttribute("src");
-
-        if (lpage != null && !lpage.isEmpty() && !lpage.equals(model.missingImage.id)) {
-            return model.getOpening(lpage);
-        } else if (rpage != null && !rpage.isEmpty() && !rpage.equals(model.missingImage.id)) {
-            return model.getOpening(rpage);
-        } else {
-            return null;
-        }
+        return model.getOpening(currentOpening);
     }
 
     private void setPositions(int viewer_width, int viewer_height) {
@@ -240,22 +240,24 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-chevron-left"}, "Previous page", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                int prev = currentOpening().position - 1;
+                int prev = currentOpening - 1;
                 if (prev >= 0) {
                     Opening opening = model.getOpening(prev);
                     changeToOpening(opening);
                     focusThumb(opening.verso);
+                    currentOpening--;
                 }
             }
         }));
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-chevron-right"}, "Next page", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                int next = currentOpening().position + 1;
+                int next = currentOpening + 1;
                 if (next < model.openings.size()) {
                     Opening opening = model.getOpening(next);
                     changeToOpening(opening);
                     focusThumb(opening.verso);
+                    currentOpening++;
                 }
             }
         }));
@@ -299,13 +301,16 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
      * @param nImageIndex index of clicked image in image list
      */
     private void onThumbnailClick(String strImagePath, int nImageIndex) {
-        if (debug) {
-            Console.log("[PageTurner#onThumbnailClick] " + nImageIndex + "\n" + strImagePath);
+        debug("[PageTurner#onThumbnailClick] " + nImageIndex + "\n" + strImagePath);
+        Opening newOpening = model.getOpening(strImagePath);
+        if (newOpening != null) {
+            changeToOpening(newOpening);
+            currentOpening = newOpening.position;
         }
-        changeToOpening(model.getOpening(strImagePath));
     }
 
     private void changeToOpening(Opening opening) {
+        debug("[PageTurner] Changing to opening: " + opening.toString());
         if (opening.verso == null || opening.verso.missing) {
             left.changeImage(model.missingImage.id);
         } else {
@@ -319,6 +324,9 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
     }
 
     private void focusThumb(Page focusPage) {
+        if (focusPage == null) {
+            return;
+        }
         int index = model.getPagePosition(focusPage.id);
         if (index >= 0) {
             thumbnailStrip.focusImage(index);
@@ -343,5 +351,11 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
     @Override
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
+    }
+
+    private void debug(String message) {
+        if (debug) {
+            Console.log(message);
+        }
     }
 }

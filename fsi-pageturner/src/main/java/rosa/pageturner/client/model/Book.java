@@ -56,9 +56,9 @@ public class Book {
         // Check openings
         Opening fromOpenings = getOpening(pageId);
         if (fromOpenings != null) {
-            if (fromOpenings.verso.id.equals(pageId)) {
+            if (fromOpenings.verso != null && fromOpenings.verso.id.equals(pageId)) {
                 return fromOpenings.position * 2;
-            } else if (fromOpenings.recto.id.equals(pageId)) {
+            } else if (fromOpenings.recto != null && fromOpenings.recto.id.equals(pageId)) {
                 return fromOpenings.position * 2 + 1;
             }
         }
@@ -66,7 +66,8 @@ public class Book {
         // Check single images at end
         if (endSingles != null) {
             for (int i = 0; i < endSingles.length; i++) {
-                if (endSingles[i].id.equals(pageId)) {
+                Page p = endSingles[i];
+                if (p != null &&p.id.equals(pageId)) {
                     return openings.size() * 2 + 1 + i;
                 }
             }
@@ -85,10 +86,10 @@ public class Book {
         StringBuilder sb = new StringBuilder();
 
         for (Opening current : openings) {
-            if (current.verso != null && !current.verso.missing) {
+            if (current.verso != null) {
                 sb.append(current.verso.id).append(',');
             }
-            if (current.recto != null && !current.recto.missing) {
+            if (current.recto != null) {
                 sb.append(current.recto.id).append(',');
             }
         }
@@ -118,5 +119,15 @@ public class Book {
         result = 31 * result + (missingImage != null ? missingImage.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(endSingles);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "fsiDirectory='" + fsiDirectory + '\'' +
+                ", openings=" + openings +
+                ", missingImage=" + missingImage +
+                ", endSingles=" + Arrays.toString(endSingles) +
+                '}';
     }
 }

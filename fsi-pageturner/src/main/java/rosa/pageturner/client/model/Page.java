@@ -58,4 +58,15 @@ public class Page {
         result = 31 * result + height;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Page{" +
+                "id='" + id + '\'' +
+                ", label='" + label + '\'' +
+                ", missing=" + missing +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }

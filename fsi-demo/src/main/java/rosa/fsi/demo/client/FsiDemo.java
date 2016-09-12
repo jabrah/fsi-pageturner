@@ -52,7 +52,7 @@ public class FsiDemo implements EntryPoint {
     private Book fakeBook() {
         List<Opening> openings = new ArrayList<>();
         openings.add(new Opening(
-                null,
+                new Page("rose/missing_image.tif", "missing image", true, 300, 400),
                 new Page("rose/Arsenal3339/Arsenal3339.binding.frontcover.tif", "Binding Front cover", false, 3200, 4000),
                 "",
                 0
