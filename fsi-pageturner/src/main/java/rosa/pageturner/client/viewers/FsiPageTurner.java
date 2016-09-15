@@ -8,6 +8,9 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -23,7 +26,7 @@ import java.util.Map;
 /**
  *
  */
-public class FsiPageTurner extends Composite implements PageTurner, HasClickHandlers {
+public class FsiPageTurner extends Composite implements PageTurner, HasClickHandlers, HasValueChangeHandlers<Opening> {
     private static final Map<String, String> SHARED_VIEWER_OPTIONS = new HashMap<>();
     private static final Map<String, String> IMAGE_FLOW_OPTIONS = new HashMap<>();
 
@@ -67,6 +70,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     private final Book model;
 
     private int currentOpening;
+
 
     public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height, boolean debug) {
         this(book, thumbSrcs, width, height);
@@ -208,6 +212,17 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         return model.getOpening(currentOpening);
     }
 
+    @Override
+    public HandlerRegistration addOpeningChangedHandler(ValueChangeHandler<Opening> handler) {
+        debug("New handler added to deal with changing openings.");
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Opening> handler) {
+        return addOpeningChangedHandler(handler);
+    }
+
     private void zoomOnPage(FsiViewer viewer) {
         zoomed = true;
         String clickedImage = viewer.getElement().getAttribute("src");
@@ -334,6 +349,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         } else {
             right.changeImage(opening.recto.id);
         }
+
+        ValueChangeEvent.fire(this, opening);
     }
 
     private native void createViewerCallbacks(FsiPageTurner el) /*-{
