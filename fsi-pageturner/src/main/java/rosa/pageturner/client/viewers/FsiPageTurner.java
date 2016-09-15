@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
-import rosa.pageturner.client.model.Page;
 import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  *
  */
-public class FsiPageTurner extends Composite implements HasClickHandlers {
+public class FsiPageTurner extends Composite implements PageTurner, HasClickHandlers {
     private static final Map<String, String> SHARED_VIEWER_OPTIONS = new HashMap<>();
     private static final Map<String, String> IMAGE_FLOW_OPTIONS = new HashMap<>();
 
@@ -42,17 +41,29 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         IMAGE_FLOW_OPTIONS.put("callBackClick", "imageFlowClick");
     }
 
+    /**
+     * When left or right pages are clicked, this view takes over the PageTurner and
+     * gives the user full zoom/pan controls for the selected page.
+     */
     private final FsiViewer zoomView;
+    /** Static viewer for showing left page (verso) */
     private final FsiViewer left;
+    /** Static viewer for showing right page (recto) */
     private final FsiViewer right;
+    /** FSI Image Flow for showing thumbnails */
     private final FsiImageFlow thumbnailStrip;
+    /** Container for any custom controls for this PageTurner. EX: next/prev buttons */
     private final Panel controls;
 
+    /** Close button for minimizing the <em>zoomView</em> */
     private Anchor closeBtn;
 
+    /** Print debug statements in the browser JavaScript console */
     private boolean debug;
+    /** Is the <em>zoomView</em> currently active? */
     private boolean zoomed;
 
+    /** PageTurner data model. Includes a list of openings. */
     private final Book model;
 
     private int currentOpening;
@@ -189,19 +200,20 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
         fsiInit();
     }
 
+    /**
+     * @return current opening visible in viewer, NULL if none was found
+     */
+    @Override
+    public Opening currentOpening() {
+        return model.getOpening(currentOpening);
+    }
+
     private void zoomOnPage(FsiViewer viewer) {
         zoomed = true;
         String clickedImage = viewer.getElement().getAttribute("src");
         zoomView.changeImage(clickedImage);
         closeBtn.setVisible(true);
         zoomView.setVisible(true);
-    }
-
-    /**
-     * @return current opening visible in viewer, NULL if none was found
-     */
-    public Opening currentOpening() {
-        return model.getOpening(currentOpening);
     }
 
     private void setPositions(int viewer_width, int viewer_height) {
@@ -244,8 +256,8 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
                 if (prev >= 0) {
                     Opening opening = model.getOpening(prev);
                     changeToOpening(opening);
-                    focusThumb(opening.verso);
-                    currentOpening--;
+                    currentOpening = opening.position;
+                    thumbnailStrip.focusImage(opening.position*2);
                 }
             }
         }));
@@ -256,8 +268,8 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
                 if (next < model.openings.size()) {
                     Opening opening = model.getOpening(next);
                     changeToOpening(opening);
-                    focusThumb(opening.verso);
-                    currentOpening++;
+                    currentOpening = opening.position;
+                    thumbnailStrip.focusImage(opening.position*2);
                 }
             }
         }));
@@ -300,6 +312,7 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
      * @param strImagePath ID of clicked image
      * @param nImageIndex index of clicked image in image list
      */
+    @SuppressWarnings("unused")
     private void onThumbnailClick(String strImagePath, int nImageIndex) {
         debug("[PageTurner#onThumbnailClick] " + nImageIndex + "\n" + strImagePath);
         Opening newOpening = model.getOpening(strImagePath);
@@ -320,16 +333,6 @@ public class FsiPageTurner extends Composite implements HasClickHandlers {
             right.changeImage(model.missingImage.id);
         } else {
             right.changeImage(opening.recto.id);
-        }
-    }
-
-    private void focusThumb(Page focusPage) {
-        if (focusPage == null) {
-            return;
-        }
-        int index = model.getPagePosition(focusPage.id);
-        if (index >= 0) {
-            thumbnailStrip.focusImage(index);
         }
     }
 
