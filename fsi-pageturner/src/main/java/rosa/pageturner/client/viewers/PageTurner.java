@@ -2,9 +2,10 @@ package rosa.pageturner.client.viewers;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.IsWidget;
 import rosa.pageturner.client.model.Opening;
 
-public interface PageTurner {
+public interface PageTurner extends IsWidget {
     /**
      * @return the opening currently displayed in this PageTurner
      */
