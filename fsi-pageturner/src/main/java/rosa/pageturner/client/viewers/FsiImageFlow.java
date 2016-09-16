@@ -2,6 +2,7 @@ package rosa.pageturner.client.viewers;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import rosa.pageturner.client.util.Console;
 
 import java.util.Map;
 
@@ -34,7 +35,11 @@ public class FsiImageFlow extends FsiBase {
      * @param index index of desired image in image list
      */
     public void focusImage(int index) {
-        focusImage(getElement(), index);
+        try {
+            focusImage(getElement(), index);
+        } catch (IndexOutOfBoundsException e) {
+            Console.log("[ImageFlow] Index of focused image is out of bounds. (" + index + ")");
+        }
     }
 
     /**
@@ -44,7 +49,11 @@ public class FsiImageFlow extends FsiBase {
      * @param index index of desired image in image list
      */
     public void zoomImage(int index) {
-        zoomImage(getElement(), index);
+        try {
+            zoomImage(getElement(), index);
+        } catch (IndexOutOfBoundsException e) {
+            Console.log("[ImageFlow] Index of zoomed image is out of bounds. (" + index + ")");
+        }
     }
 
     /**

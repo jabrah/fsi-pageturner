@@ -370,6 +370,10 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     private void changeToOpening(Opening opening) {
+        if (opening.position >= model.openings.size()) {
+            return;
+        }
+
         debug("[PageTurner] Changing to opening: " + opening.toString());
         if (opening.verso == null || opening.verso.missing) {
             left.changeImage(model.missingImage.id);
