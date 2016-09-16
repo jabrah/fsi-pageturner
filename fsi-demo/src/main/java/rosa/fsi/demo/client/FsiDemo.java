@@ -3,9 +3,16 @@ package rosa.fsi.demo.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 import rosa.pageturner.client.model.Page;
@@ -45,8 +52,28 @@ public class FsiDemo implements EntryPoint {
             }
         });
 
+        Panel controls = new VerticalPanel();
+        controls.setStyleName("demo-controls");
+
+        Button changeOpening = new Button("Change Opening");
+        changeOpening.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                pageTurner.setOpening(5);
+            }
+        });
+
+        controls.add(changeOpening);
+
+        DockLayoutPanel root = new DockLayoutPanel(Unit.PX);
+
+        root.addWest(controls, 150);
+        root.add(pageTurner);
+
+        root.setSize("1500px", "800px");
+
         // Add the page turner to the DOM
-        RootPanel.get().add(pageTurner);
+        RootPanel.get().add(root);
     }
 
     private Book fakeBook() {
