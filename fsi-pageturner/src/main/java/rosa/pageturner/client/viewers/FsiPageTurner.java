@@ -1,17 +1,19 @@
 package rosa.pageturner.client.viewers;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -71,18 +73,27 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
     private int currentOpening;
 
-
+    /**
+     * Create a new FSI Page Turner widget with debugging on.
+     *
+     * @param book data model
+     * @param thumbSrcs list of images to define thumbnail order
+     * @param width desired viewer width
+     * @param height desired viewer height
+     * @param debug turn debug on?
+     */
     public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height, boolean debug) {
         this(book, thumbSrcs, width, height);
         this.debug = debug;
         debug("Initializing page turner with model: " + book.toString());
     }
 
-    public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height) {
+    public FsiPageTurner(Book book, String[] thumbSrcs, final int width, final int height) {
         this.model = book;
         this.currentOpening = 0;
 
         Panel root = new FlowPanel("fsi-rosa-pageturner");
+        root.setSize(width + "px", height + "px");
 
         controls = new FlowPanel("div");
         thumbnailStrip = new FsiImageFlow();
@@ -112,7 +123,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         left.addStyleName("pageturner-left");
         left.setId("rosa-pageturner-left");
         left.setOptions(options);
-        left.setSize(width, height);
 
         left.addClickHandler(new ClickHandler() {
             @Override
@@ -138,7 +148,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         right.addStyleName("pageturner-right");
         right.setId("rosa-pageturner-right");
         right.setOptions(options);
-        right.setSize(width, height);
 
         right.addClickHandler(new ClickHandler() {
             @Override
@@ -173,12 +182,12 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
         thumbnailStrip.setId("rosa-thumbnails");
         thumbnailStrip.setOptions(options);
-        thumbnailStrip.setSize((width*2 + 2), 150);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ----------- Zoom viewer ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
         zoomView = new FsiViewer();
+        zoomView.setStyleName("pageturner-zoomview");
         options = new HashMap<>();
         options.put("plugins", "FullScreen, Resize");
         options.put("hideUI", "false");
@@ -186,7 +195,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         options.put("src", book.missingImage.id);
         zoomView.setId("rosa-pageturner-zoomview");
         zoomView.setOptions(options);
-        zoomView.setSize(width * 2 + 2, height);
         zoomView.setVisible(false);
 
         root.add(left);
@@ -198,10 +206,42 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         initWidget(root);
 
         createViewerCallbacks(this);
-
         setControls();
-        setPositions(width, height);
         fsiInit();
+
+        Window.addResizeHandler(new ResizeHandler() {
+            @Override
+            public void onResize(ResizeEvent event) {
+                resize();
+            }
+        });
+
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                setOpening(0);
+                resize();
+            }
+        });
+    }
+
+    private void resize() {
+        if (thumbnailStrip == null) {
+            return;
+        }
+
+        int width = getOffsetWidth();
+        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() + "px";
+
+        if (left != null) {
+            left.setSize(width/2+"px", height);
+        }
+        if (right != null) {
+            right.setSize(width/2+"px", height);
+        }
+        if (zoomView != null) {
+            zoomView.setSize(width+"px", height);
+        }
     }
 
     /**
@@ -219,8 +259,27 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     @Override
+    public void setOpening(int index) {
+        changeToOpening(model.getOpening(index));
+    }
+
+    @Override
+    public void setOpening(Opening opening) {
+        changeToOpening(opening);
+    }
+
+    @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Opening> handler) {
         return addOpeningChangedHandler(handler);
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
     }
 
     private void zoomOnPage(FsiViewer viewer) {
@@ -229,24 +288,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         zoomView.changeImage(clickedImage);
         closeBtn.setVisible(true);
         zoomView.setVisible(true);
-    }
-
-    private void setPositions(int viewer_width, int viewer_height) {
-        if (left == null || right == null || thumbnailStrip == null) {
-            return;
-        }
-
-        Style style = controls.getElement().getStyle();
-        style.setTop(viewer_height, Unit.PX);
-        style.setWidth((viewer_width * 2 + 2), Unit.PX);
-
-        style = right.getElement().getStyle();
-        style.setLeft(viewer_width + 2, Unit.PX);
-
-        style = zoomView.getElement().getStyle();
-        style.setPosition(Position.ABSOLUTE);
-        style.setTop(0, Unit.PX);
-        style.setLeft(0, Unit.PX);
     }
 
     private void setControls() {
@@ -363,15 +404,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         console.log("Initializing FSI tags.");
         $wnd.$FSI.initCustomTags();
     }-*/;
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
-    @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addDomHandler(handler, ClickEvent.getType());
-    }
 
     private void debug(String message) {
         if (debug) {

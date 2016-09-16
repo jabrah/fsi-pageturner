@@ -33,7 +33,7 @@ public class FsiDemo implements EntryPoint {
         Book fakeBook = fakeBook();
 
         // Create the page turner! Use the books page list to define image order
-        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 400, 500);
+        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 800, 700);
         // Turn on debugging
         pageTurner.setDebug(true);
 

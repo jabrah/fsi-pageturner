@@ -1,15 +1,35 @@
-.viewer {
+fsi-rosa-pageturner {
+  display: block;
   position: relative;
-  left: 0;
-  top: 0;
+}
+
+.viewer {
+  display: inline-block;
+  width: 50%;
+}
+
+.pageturner-left {
   float: left;
 }
 
 .pageturner-right {
-  float: none;
+
+}
+
+.pageturner-thumbs {
+  width: 100%;
+  height: 150px;
+}
+
+.pageturner-zoomview {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
 }
 
 .pageturner-controls {
+  width: 100%;
   height: 20px;
   background-color: #ebebeb;
   /* Center items */

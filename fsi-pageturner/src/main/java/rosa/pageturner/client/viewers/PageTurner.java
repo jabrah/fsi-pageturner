@@ -21,4 +21,7 @@ public interface PageTurner extends IsWidget {
      * @return handler registration object
      */
     HandlerRegistration addOpeningChangedHandler(ValueChangeHandler<Opening> handler);
+
+    void setOpening(int index);
+    void setOpening(Opening opening);
 }
