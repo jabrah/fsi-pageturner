@@ -291,8 +291,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             public void onClick(ClickEvent event) {
                 Opening first = model.getOpening(0);
                 changeToOpening(first);
-                currentOpening = first.position;
-                thumbnailStrip.focusImage(first.position);
             }
         }));
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-chevron-left"}, "Previous page", new ClickHandler() {
@@ -302,8 +300,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 if (prev >= 0) {
                     Opening opening = model.getOpening(prev);
                     changeToOpening(opening);
-                    currentOpening = opening.position;
-                    thumbnailStrip.focusImage(opening.position*2);
                 }
             }
         }));
@@ -314,8 +310,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 if (next < model.openings.size()) {
                     Opening opening = model.getOpening(next);
                     changeToOpening(opening);
-                    currentOpening = opening.position;
-                    thumbnailStrip.focusImage(opening.position*2);
                 }
             }
         }));
@@ -324,8 +318,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             public void onClick(ClickEvent event) {
                 Opening last = model.getOpening(model.openings.size() - 1);
                 changeToOpening(last);
-                currentOpening = last.position;
-                thumbnailStrip.focusImage(last.position * 2);
             }
         }));
     }
@@ -389,6 +381,9 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         } else {
             right.changeImage(opening.recto.id);
         }
+
+        currentOpening = opening.position;
+        thumbnailStrip.focusImage(opening.position * 2);
 
         ValueChangeEvent.fire(this, opening);
     }
