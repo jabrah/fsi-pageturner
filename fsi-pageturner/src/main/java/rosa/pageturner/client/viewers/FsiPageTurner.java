@@ -225,25 +225,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         });
     }
 
-    private void resize() {
-        if (thumbnailStrip == null) {
-            return;
-        }
-
-        int width = getOffsetWidth();
-        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() + "px";
-
-        if (left != null) {
-            left.setSize(width/2+"px", height);
-        }
-        if (right != null) {
-            right.setSize(width/2+"px", height);
-        }
-        if (zoomView != null) {
-            zoomView.setSize(width+"px", height);
-        }
-    }
-
     /**
      * @return current opening visible in viewer, NULL if none was found
      */
@@ -305,6 +286,15 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         closeBtn.setVisible(false);
         controls.add(closeBtn);
 
+        controls.add(newControl(new String[]{"fa", "fa-lg", "fa-step-backward"}, "First page", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Opening first = model.getOpening(0);
+                changeToOpening(first);
+                currentOpening = first.position;
+                thumbnailStrip.focusImage(first.position);
+            }
+        }));
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-chevron-left"}, "Previous page", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -327,6 +317,15 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                     currentOpening = opening.position;
                     thumbnailStrip.focusImage(opening.position*2);
                 }
+            }
+        }));
+        controls.add(newControl(new String[]{"fa", "fa-lg", "fa-step-forward"}, "Last page", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Opening last = model.getOpening(model.openings.size() - 1);
+                changeToOpening(last);
+                currentOpening = last.position;
+                thumbnailStrip.focusImage(last.position * 2);
             }
         }));
     }
@@ -392,6 +391,25 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         }
 
         ValueChangeEvent.fire(this, opening);
+    }
+
+    private void resize() {
+        if (thumbnailStrip == null) {
+            return;
+        }
+
+        int width = getOffsetWidth();
+        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() + "px";
+
+        if (left != null) {
+            left.setSize(width/2+"px", height);
+        }
+        if (right != null) {
+            right.setSize(width/2+"px", height);
+        }
+        if (zoomView != null) {
+            zoomView.setSize(width+"px", height);
+        }
     }
 
     private native void createViewerCallbacks(FsiPageTurner el) /*-{

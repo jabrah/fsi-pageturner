@@ -67,7 +67,7 @@ public class FsiDemo implements EntryPoint {
 
         DockLayoutPanel root = new DockLayoutPanel(Unit.PX);
 
-        root.addWest(controls, 150);
+        root.addWest(controls, 300);
         root.add(pageTurner);
 
         root.setSize("1500px", "800px");
