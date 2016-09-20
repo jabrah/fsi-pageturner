@@ -19,6 +19,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.vaadin.polymer</groupId>
+            <artifactId>vaadin-gwt-polymer-elements</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <scope>runtime</scope>
@@ -62,6 +68,7 @@
                         <compileSourcesArtifact>rosa:fsi-pageturner</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                     <warSourceDirectory>${basedir}/war</warSourceDirectory>
+                    <jsInteropMode>JS</jsInteropMode>
                 </configuration>
             </plugin>
         </plugins>

@@ -2,17 +2,14 @@ package rosa.fsi.demo.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.vaadin.polymer.Polymer;
+import com.vaadin.polymer.elemental.Function;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
 import rosa.pageturner.client.model.Page;
@@ -29,13 +26,18 @@ public class FsiDemo implements EntryPoint {
 
     public void onModuleLoad() {
         // Log any unexpected errors
-        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            @Override
-            public void onUncaughtException(Throwable e) {
-                Console.log("An unexpected error has occurred.\n" + e.getMessage());
+        GWT.setUncaughtExceptionHandler( e -> Console.log("An unexpected error has occurred.\n" + e.getMessage()) );
+
+        Polymer.importHref("iron-icons/iron-icons.html", new Function() {
+            public Object call(Object arg) {
+                // The app is executed when all imports succeed.
+                startApplication();
+                return null;
             }
         });
+    }
 
+    private void startApplication() {
         // Generate fake data to populate the viewer
         Book fakeBook = fakeBook();
 
@@ -45,23 +47,13 @@ public class FsiDemo implements EntryPoint {
         pageTurner.setDebug(true);
 
         // Add a ValueChangeHandler to monitor when the page is turned
-        pageTurner.addOpeningChangedHandler(new ValueChangeHandler<Opening>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Opening> event) {
-                Console.log("Opening has changed! [" + event.getValue().position + "] " + event.getValue().label);
-            }
-        });
+        pageTurner.addOpeningChangedHandler(event -> Console.log("Opening has changed! [" + event.getValue().position + "] " + event.getValue().label));
 
         Panel controls = new VerticalPanel();
         controls.setStyleName("demo-controls");
 
         Button changeOpening = new Button("Change Opening");
-        changeOpening.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                pageTurner.setOpening(5);
-            }
-        });
+        changeOpening.addClickHandler(event -> pageTurner.setOpening(5));
 
         controls.add(changeOpening);
 

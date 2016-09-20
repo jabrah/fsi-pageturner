@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import com.vaadin.polymer.iron.widget.IronIcon;
+import com.vaadin.polymer.paper.widget.PaperIconButton;
 import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
@@ -209,20 +211,22 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         setControls();
         fsiInit();
 
-        Window.addResizeHandler(new ResizeHandler() {
-            @Override
-            public void onResize(ResizeEvent event) {
-                resize();
-            }
-        });
-
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
-                setOpening(0);
-                resize();
-            }
-        });
+//        Window.addResizeHandler(new ResizeHandler() {
+//            @Override
+//            public void onResize(ResizeEvent event) {
+//                resize();
+//            }
+//        });
+//
+//        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+//            @Override
+//            public void execute() {
+//                setOpening(0);
+//                resize();
+//            }
+//        });
+        Window.addResizeHandler( event -> resize() );
+        Scheduler.get().scheduleDeferred(() -> { setOpening(0); resize(); });
     }
 
     /**
@@ -272,17 +276,15 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     private void setControls() {
-        closeBtn = newControl(new String[]{"fa", "fa-2x",  "fa-times"}, "Close zoom view", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (zoomed) {
-                    closeBtn.setVisible(false);
-                    zoomView.setVisible(false);
-                    zoomed = false;
-                }
+        PaperIconButton closeBtn = new PaperIconButton();
+        closeBtn.setIcon("close");
+        closeBtn.addClickHandler( clickEvent -> {
+            if (zoomed) {
+                closeBtn.setVisible(false);
+                zoomView.setVisible(false);
+                zoomed = false;
             }
-        });
-        closeBtn.setStyleName("pageturner-btn-zoom-close");
+        } );
         closeBtn.setVisible(false);
         controls.add(closeBtn);
 
