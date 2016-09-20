@@ -398,7 +398,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         }
 
         int width = getOffsetWidth();
-        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() + "px";
+        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() - controls.getOffsetHeight() + "px";
 
         if (left != null) {
             left.setSize(width/2+"px", height);
