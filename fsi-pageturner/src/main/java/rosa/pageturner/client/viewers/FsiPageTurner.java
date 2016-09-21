@@ -85,6 +85,11 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height, boolean debug) {
         this(book, thumbSrcs, width, height);
         this.debug = debug;
+
+        left.setDebug(debug);
+        right.setDebug(debug);
+        thumbnailStrip.setDebug(debug);
+
         debug("Initializing page turner with model: " + book.toString());
     }
 
@@ -207,7 +212,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
         createViewerCallbacks(this);
         setControls();
-        fsiInit();
 
         Window.addResizeHandler(new ResizeHandler() {
             @Override
@@ -216,9 +220,11 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             }
         });
 
+        // Defer: initialize FSI instances, set appropriate pages, set correct size.
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
+                fsiInit();
                 setOpening(0);
                 resize();
             }
@@ -256,6 +262,9 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+        this.left.setDebug(debug);
+        this.right.setDebug(debug);
+        this.thumbnailStrip.setDebug(debug);
     }
 
     @Override
