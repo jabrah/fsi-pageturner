@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -17,7 +18,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import rosa.pageturner.client.model.Page;
 import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
@@ -62,6 +65,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
     /** Close button for minimizing the <em>zoomView</em> */
     private Anchor closeBtn;
+    /** Label for displaying currently visible page labels */
+    private Label openingLabel;
 
     /** Print debug statements in the browser JavaScript console */
     private boolean debug;
@@ -281,6 +286,11 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     private void setControls() {
+        openingLabel = new Label();
+        openingLabel.setStyleName("pageturner-label");
+
+        controls.add(openingLabel);
+
         closeBtn = newControl(new String[]{"fa", "fa-2x",  "fa-times"}, "Close zoom view", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -398,6 +408,13 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         currentOpening = opening.position;
         thumbnailStrip.focusImage(opening.position * 2);
 
+        // Also change label describing visible pages
+        openingLabel.setText(
+                (pageHasLabel(opening.verso) ? opening.verso.label : "") +
+                (pageHasLabel(opening.verso) && pageHasLabel(opening.recto) ? ", " : "") +
+                (pageHasLabel(opening.recto) ? opening.recto.label : "")
+        );
+
         ValueChangeEvent.fire(this, opening);
     }
 
@@ -407,16 +424,19 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         }
 
         int width = getOffsetWidth();
-        String height = getOffsetHeight() - thumbnailStrip.getOffsetHeight() + "px";
+        int height = getOffsetHeight() - controls.getOffsetHeight() - thumbnailStrip.getOffsetHeight();
 
         if (left != null) {
-            left.setSize(width/2+"px", height);
+            left.setSize(width/2+"px", height+"px");
         }
         if (right != null) {
-            right.setSize(width/2+"px", height);
+            right.setSize(width/2+"px", height+"px");
         }
         if (zoomView != null) {
-            zoomView.setSize(width+"px", height);
+            zoomView.setSize(width+"px", height+"px");
+        }
+        if (openingLabel != null) {
+            openingLabel.getElement().getStyle().setTop(height + 6, Style.Unit.PX);
         }
     }
 
@@ -435,5 +455,9 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         if (debug) {
             Console.log(message);
         }
+    }
+
+    private boolean pageHasLabel(Page p) {
+        return p != null && p.label != null && !p.label.isEmpty();
     }
 }

@@ -90,8 +90,8 @@ public class FsiDemo implements EntryPoint {
             String right = parts[i++];
 
             openings.add(new Opening(
-                    new Page(left, left, false, 3200, 4000),
-                    new Page(right, right, false, 3200, 4000),
+                    new Page(left, i + "v", false, 3200, 4000),
+                    new Page(right, i + "r", false, 3200, 4000),
                     "Label " + i,
                     openings.size()
             ));
