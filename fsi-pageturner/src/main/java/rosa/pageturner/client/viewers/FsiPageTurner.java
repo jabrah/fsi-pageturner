@@ -83,12 +83,10 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
      *
      * @param book data model
      * @param thumbSrcs list of images to define thumbnail order
-     * @param width desired viewer width
-     * @param height desired viewer height
      * @param debug turn debug on?
      */
-    public FsiPageTurner(Book book, String[] thumbSrcs, int width, int height, boolean debug) {
-        this(book, thumbSrcs, width, height);
+    public FsiPageTurner(Book book, String[] thumbSrcs, boolean debug) {
+        this(book, thumbSrcs);
         this.debug = debug;
 
         left.setDebug(debug);
@@ -98,12 +96,12 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         debug("Initializing page turner with model: " + book.toString());
     }
 
-    public FsiPageTurner(Book book, String[] thumbSrcs, final int width, final int height) {
+    public FsiPageTurner(Book book, String[] thumbSrcs) {
         this.model = book;
         this.currentOpening = 0;
 
         Panel root = new FlowPanel("fsi-rosa-pageturner");
-        root.setSize(width + "px", height + "px");
+        root.setSize("100%", "100%");
 
         controls = new FlowPanel("div");
         thumbnailStrip = new FsiImageFlow();
@@ -221,6 +219,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         Window.addResizeHandler(new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent event) {
+                Console.log("[PageTurner] resizing...");
                 resize();
             }
         });
@@ -427,13 +426,13 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         int height = getOffsetHeight() - controls.getOffsetHeight() - thumbnailStrip.getOffsetHeight();
 
         if (left != null) {
-            left.setSize(width/2+"px", height+"px");
+            left.setSize(width / 2 + "px", height + "px");
         }
         if (right != null) {
-            right.setSize(width/2+"px", height+"px");
+            right.setSize(width / 2 + "px", height + "px");
         }
         if (zoomView != null) {
-            zoomView.setSize(width+"px", height+"px");
+            zoomView.setSize(width + "px", height + "px");
         }
         if (openingLabel != null) {
             openingLabel.getElement().getStyle().setTop(height + 6, Style.Unit.PX);
