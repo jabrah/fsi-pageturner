@@ -38,6 +38,14 @@ fsi-rosa-pageturner {
   align-items: center;
 }
 
+.pageturner-controls .pageturner-label {
+  position: absolute;
+  left: 6px;
+  font-weight: bold;
+  font-style: italic;
+  color: #565757
+}
+
 .pageturner-controls a, .pageturner-controls a:visited {
   color: #8d8d8d;
   text-decoration: none;

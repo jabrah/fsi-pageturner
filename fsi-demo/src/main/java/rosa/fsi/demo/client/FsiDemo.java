@@ -11,6 +11,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import rosa.pageturner.client.model.Book;
@@ -40,7 +41,7 @@ public class FsiDemo implements EntryPoint {
         Book fakeBook = fakeBook();
 
         // Create the page turner! Use the books page list to define image order
-        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","), 800, 700);
+        final FsiPageTurner pageTurner = new FsiPageTurner(fakeBook, fakeBook.getPagesList().split(","));
         // Turn on debugging
         pageTurner.setDebug(true);
 
@@ -70,10 +71,10 @@ public class FsiDemo implements EntryPoint {
         root.addWest(controls, 300);
         root.add(pageTurner);
 
-        root.setSize("1500px", "800px");
+//        root.setSize("1500px", "800px");
 
         // Add the page turner to the DOM
-        RootPanel.get().add(root);
+        RootLayoutPanel.get().add(root);
     }
 
     private Book fakeBook() {
@@ -90,8 +91,8 @@ public class FsiDemo implements EntryPoint {
             String right = parts[i++];
 
             openings.add(new Opening(
-                    new Page(left, left, false, 3200, 4000),
-                    new Page(right, right, false, 3200, 4000),
+                    new Page(left, i + "v", false, 3200, 4000),
+                    new Page(right, i + "r", false, 3200, 4000),
                     "Label " + i,
                     openings.size()
             ));
