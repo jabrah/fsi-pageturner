@@ -8,6 +8,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -142,6 +144,14 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 }
             }
         });
+        left.addTouchEndHandler(new TouchEndHandler() {
+            @Override
+            public void onTouchEnd(TouchEndEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(left);
+                }
+            }
+        });
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ----------- Right viewer --------------------------------------------------------------------------------------------
@@ -162,6 +172,14 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         right.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(right);
+                }
+            }
+        });
+        right.addTouchEndHandler(new TouchEndHandler() {
+            @Override
+            public void onTouchEnd(TouchEndEvent event) {
                 if (!zoomed) {
                     zoomOnPage(right);
                 }
