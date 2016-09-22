@@ -77,6 +77,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     private final Book model;
 
     private int currentOpening;
+    private String preferredWidth;
+    private String preferredHeight;
 
     /**
      * Create a new FSI Page Turner widget with debugging on.
@@ -219,7 +221,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         Window.addResizeHandler(new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent event) {
-                Console.log("[PageTurner] resizing...");
                 resize();
             }
         });
@@ -233,6 +234,13 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 resize();
             }
         });
+    }
+
+    @Override
+    public void setSize(String width, String height) {
+        super.setSize(width, height);
+        this.preferredWidth = width;
+        this.preferredHeight = height;
     }
 
     /**
@@ -418,7 +426,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     private void resize() {
-        if (thumbnailStrip == null) {
+        if (thumbnailStrip == null || !isEmpty(preferredWidth) || !isEmpty(preferredHeight)) {
             return;
         }
 
@@ -457,6 +465,10 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     }
 
     private boolean pageHasLabel(Page p) {
-        return p != null && p.label != null && !p.label.isEmpty();
+        return p != null && !isEmpty(p.label);
+    }
+
+    private boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 }

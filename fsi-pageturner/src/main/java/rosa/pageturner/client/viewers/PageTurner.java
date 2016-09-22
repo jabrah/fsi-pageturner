@@ -24,4 +24,5 @@ public interface PageTurner extends IsWidget {
 
     void setOpening(int index);
     void setOpening(Opening opening);
+    void setSize(String width, String height);
 }
