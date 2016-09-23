@@ -95,6 +95,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
         left.setDebug(debug);
         right.setDebug(debug);
+        zoomView.setDebug(debug);
         thumbnailStrip.setDebug(debug);
 
         debug("Initializing page turner with model: " + book.toString());
@@ -118,78 +119,20 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
 
         Opening start = book.getOpening(0);
 
-        // Set viewer options here
-        Map<String, String> options = new HashMap<>(SHARED_VIEWER_OPTIONS);
-
 // ---------------------------------------------------------------------------------------------------------------------
 // ---------- Left viewer ----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-        left = new FsiViewer();
-
-        options.put("onInit", "initFsiViewerV");
-        if (start.verso != null) {
-            options.put("src", start.verso.id);
-        }
-
-        left.setStyleName("viewer");
-        left.addStyleName("pageturner-left");
-        left.setId("rosa-pageturner-left");
-        left.setOptions(options);
-
-        left.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (!zoomed) {
-                    zoomOnPage(left);
-                }
-            }
-        });
-        left.addTouchEndHandler(new TouchEndHandler() {
-            @Override
-            public void onTouchEnd(TouchEndEvent event) {
-                if (!zoomed) {
-                    zoomOnPage(left);
-                }
-            }
-        });
+        left = createViewer(start.verso, "rosa-pageturner-left", "pageturner-left", SHARED_VIEWER_OPTIONS);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ----------- Right viewer --------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-        right = new FsiViewer();
-
-        options = new HashMap<>(SHARED_VIEWER_OPTIONS);
-        options.put("onInit", "initFsiViewerR");
-        if (start.recto != null) {
-            options.put("src", start.recto.id);
-        }
-
-        right.setStyleName("viewer");
-        right.addStyleName("pageturner-right");
-        right.setId("rosa-pageturner-right");
-        right.setOptions(options);
-
-        right.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (!zoomed) {
-                    zoomOnPage(right);
-                }
-            }
-        });
-        right.addTouchEndHandler(new TouchEndHandler() {
-            @Override
-            public void onTouchEnd(TouchEndEvent event) {
-                if (!zoomed) {
-                    zoomOnPage(right);
-                }
-            }
-        });
+        right = createViewer(start.recto, "rosa-pageturner-right", "pageturner-right", SHARED_VIEWER_OPTIONS);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ----------- Thumbnails ----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-        options = new HashMap<>(IMAGE_FLOW_OPTIONS);
+        Map<String, String> options = new HashMap<>(IMAGE_FLOW_OPTIONS);
         if (thumbSrcs == null || thumbSrcs.length == 0) {
             options.put("dir", fsiDir);
         } else {
@@ -218,8 +161,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         zoomView.setStyleName("pageturner-zoomview");
         options = new HashMap<>();
         options.put("plugins", "FullScreen, Resize");
-        options.put("hideUI", "false");
-        options.put("enableZoom", "true");
         options.put("src", book.missingImage.id);
         zoomView.setId("rosa-pageturner-zoomview");
         zoomView.setOptions(options);
@@ -294,6 +235,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         this.debug = debug;
         this.left.setDebug(debug);
         this.right.setDebug(debug);
+        this.zoomView.setDebug(debug);
         this.thumbnailStrip.setDebug(debug);
     }
 
@@ -302,12 +244,45 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         return addDomHandler(handler, ClickEvent.getType());
     }
 
+    private FsiViewer createViewer(Page targetPage, String id, String cssClass, Map<String, String> defaultOptions) {
+        final FsiViewer viewer = new FsiViewer();
+
+        Map<String, String> options = new HashMap<>(defaultOptions);
+        if (targetPage != null) {
+            options.put("src", targetPage.id);
+        }
+
+        viewer.setStyleName("viewer");
+        viewer.addStyleName(cssClass);
+        viewer.setId(id);
+        viewer.setOptions(options);
+
+        viewer.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(viewer);
+                }
+            }
+        });
+        viewer.addTouchEndHandler(new TouchEndHandler() {
+            @Override
+            public void onTouchEnd(TouchEndEvent event) {
+                if (!zoomed) {
+                    zoomOnPage(viewer);
+                }
+            }
+        });
+
+        return viewer;
+    }
+
     private void zoomOnPage(FsiViewer viewer) {
         zoomed = true;
-        String clickedImage = viewer.getElement().getAttribute("src");
-        zoomView.changeImage(clickedImage);
         closeBtn.setVisible(true);
         zoomView.setVisible(true);
+        String clickedImage = viewer.getElement().getAttribute("src");
+        zoomView.changeImage(clickedImage);
     }
 
     private void setControls() {

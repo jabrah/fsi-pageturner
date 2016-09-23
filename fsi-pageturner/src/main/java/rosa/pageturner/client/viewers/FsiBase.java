@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FocusWidget;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,6 +22,9 @@ public abstract class FsiBase extends FocusWidget {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+        Map<String, String> option = new HashMap<>();
+        option.put("debug", String.valueOf(debug));
+        setOptions(option);
     }
 
     protected boolean debug() {
