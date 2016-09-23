@@ -23,8 +23,11 @@ public class FsiViewer extends FsiBase {
         if (debug()) {
             console("[" + getId() + "] Changing image -> " + imageId);
         }
-        getElement().setAttribute("src", imageId);
-        changeImage(getElement(), imageId);
+        // Don't bother changing if current image is the same as desired image
+        if (!getElement().getAttribute("src").equals(imageId)) {
+            getElement().setAttribute("src", imageId);
+            changeImage(getElement(), imageId);
+        }
     }
 
     public void changeConfig(String pathToConfigFile, Map<String, String> params) {

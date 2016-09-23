@@ -4,8 +4,10 @@ fsi-rosa-pageturner {
 }
 
 .viewer {
+  position: relative;
   display: inline-block;
   width: 50%;
+  z-index: 450;
 }
 
 .pageturner-left {
@@ -26,6 +28,8 @@ fsi-rosa-pageturner {
   left: 0;
   top: 0;
   width: 100%;
+  z-index: 1;
+  opacity: 0.0;
 }
 
 .pageturner-controls {

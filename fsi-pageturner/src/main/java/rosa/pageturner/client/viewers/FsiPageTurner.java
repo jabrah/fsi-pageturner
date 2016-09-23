@@ -16,6 +16,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -26,6 +27,7 @@ import rosa.pageturner.client.model.Page;
 import rosa.pageturner.client.util.Console;
 import rosa.pageturner.client.model.Book;
 import rosa.pageturner.client.model.Opening;
+import rosa.pageturner.client.util.FadeAnimation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +83,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     private int currentOpening;
     private String preferredWidth;
     private String preferredHeight;
+
+    private final FadeAnimation fadeAnimation;
 
     /**
      * Create a new FSI Page Turner widget with debugging on.
@@ -164,7 +168,6 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         options.put("src", book.missingImage.id);
         zoomView.setId("rosa-pageturner-zoomview");
         zoomView.setOptions(options);
-        zoomView.setVisible(false);
 
         root.add(left);
         root.add(right);
@@ -193,6 +196,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 resize();
             }
         });
+
+        this.fadeAnimation = new FadeAnimation(zoomView.getElement());
     }
 
     @Override
@@ -280,9 +285,10 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     private void zoomOnPage(FsiViewer viewer) {
         zoomed = true;
         closeBtn.setVisible(true);
-        zoomView.setVisible(true);
+        zoomView.getElement().getStyle().setZIndex(500);
         String clickedImage = viewer.getElement().getAttribute("src");
         zoomView.changeImage(clickedImage);
+        fadeAnimation.fadeIn(125);
     }
 
     private void setControls() {
@@ -295,9 +301,21 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             @Override
             public void onClick(ClickEvent event) {
                 if (zoomed) {
-                    closeBtn.setVisible(false);
-                    zoomView.setVisible(false);
-                    zoomed = false;
+                    fadeAnimation.fadeOut(125);
+
+                    new Timer() {
+                        private int count = 0;
+
+                        @Override
+                        public void run() {
+                            if (count++ > 5000 || !fadeAnimation.isRunning()) {
+                                closeBtn.setVisible(false);
+                                zoomView.getElement().getStyle().setZIndex(1);
+                                zoomed = false;
+                                cancel();
+                            }
+                        }
+                    }.scheduleRepeating(10);
                 }
             }
         });
