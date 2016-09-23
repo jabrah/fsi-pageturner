@@ -38,6 +38,7 @@ import java.util.Map;
 public class FsiPageTurner extends Composite implements PageTurner, HasClickHandlers, HasValueChangeHandlers<Opening> {
     private static final Map<String, String> SHARED_VIEWER_OPTIONS = new HashMap<>();
     private static final Map<String, String> IMAGE_FLOW_OPTIONS = new HashMap<>();
+    private static final int FADE_LENGTH = 125;     // milliseconds
 
     static {
         SHARED_VIEWER_OPTIONS.put("enableZoom", "false");
@@ -84,7 +85,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
     private String preferredWidth;
     private String preferredHeight;
 
-    private final FadeAnimation fadeAnimation;
+    private final FadeAnimation zoomViewFadeAnimation;
+    private FadeAnimation closeBtnFadeAnimation;
 
     /**
      * Create a new FSI Page Turner widget with debugging on.
@@ -197,7 +199,10 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             }
         });
 
-        this.fadeAnimation = new FadeAnimation(zoomView.getElement());
+        this.zoomViewFadeAnimation = new FadeAnimation(zoomView.getElement());
+        if (closeBtn != null) {
+            this.closeBtnFadeAnimation = new FadeAnimation(closeBtn.getElement());
+        }
     }
 
     @Override
@@ -288,7 +293,8 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         zoomView.getElement().getStyle().setZIndex(500);
         String clickedImage = viewer.getElement().getAttribute("src");
         zoomView.changeImage(clickedImage);
-        fadeAnimation.fadeIn(125);
+        closeBtnFadeAnimation.fadeIn(FADE_LENGTH);
+        zoomViewFadeAnimation.fadeIn(FADE_LENGTH);
     }
 
     private void setControls() {
@@ -301,14 +307,14 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
             @Override
             public void onClick(ClickEvent event) {
                 if (zoomed) {
-                    fadeAnimation.fadeOut(125);
+                    closeBtnFadeAnimation.fadeOut(FADE_LENGTH);
+                    zoomViewFadeAnimation.fadeOut(FADE_LENGTH);
 
                     new Timer() {
                         private int count = 0;
-
                         @Override
                         public void run() {
-                            if (count++ > 5000 || !fadeAnimation.isRunning()) {
+                            if (count++ > 5000 || !zoomViewFadeAnimation.isRunning()) {
                                 closeBtn.setVisible(false);
                                 zoomView.getElement().getStyle().setZIndex(1);
                                 zoomed = false;
@@ -321,6 +327,7 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         });
         closeBtn.setStyleName("pageturner-btn-zoom-close");
         closeBtn.setVisible(false);
+        closeBtn.getElement().getStyle().setOpacity(0.0d);
         controls.add(closeBtn);
 
         controls.add(newControl(new String[]{"fa", "fa-lg", "fa-step-backward"}, "First page", new ClickHandler() {
