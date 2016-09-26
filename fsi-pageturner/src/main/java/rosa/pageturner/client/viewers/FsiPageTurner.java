@@ -420,21 +420,24 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         if (opening.position >= model.openings.size()) {
             return;
         }
+        int increment = 0;
+        currentOpening = opening.position;
 
         debug("[PageTurner] Changing to opening: " + opening.toString());
         if (opening.verso == null || opening.verso.missing) {
+            increment--;
             left.changeImage(model.missingImage.id);
         } else {
             left.changeImage(opening.verso.id);
         }
         if (opening.recto == null || opening.recto.missing) {
+            increment--;
             right.changeImage(model.missingImage.id);
         } else {
             right.changeImage(opening.recto.id);
         }
 
-        currentOpening = opening.position;
-        thumbnailStrip.focusImage(opening.position * 2);
+        thumbnailStrip.focusImage(opening.position == 0 ? 0 : opening.position * 2 + increment);
 
         // Also change label describing visible pages
         openingLabel.setText(
