@@ -410,6 +410,9 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
         if (newOpening != null) {
             changeToOpening(newOpening);
             currentOpening = newOpening.position;
+            if (zoomed) {
+                zoomView.changeImage(strImagePath);
+            }
         }
     }
 
@@ -439,6 +442,12 @@ public class FsiPageTurner extends Composite implements PageTurner, HasClickHand
                 (pageHasLabel(opening.verso) && pageHasLabel(opening.recto) ? ", " : "") +
                 (pageHasLabel(opening.recto) ? opening.recto.label : "")
         );
+
+        if (zoomed && opening.recto != null) {
+            zoomView.changeImage(opening.recto.id);
+        } else if (zoomed && opening.verso != null) {
+            zoomView.changeImage(opening.verso.id);
+        }
 
         ValueChangeEvent.fire(this, opening);
     }
